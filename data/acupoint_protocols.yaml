@@ -1,0 +1,6 @@
+# 针灸方案
+protocols:
+  - condition: chronic_low_back_pain
+    acupoints: [BL23, BL25, BL40, GV3, GV4]
+    sessions: 10
+    frequency: 2x_weekly
