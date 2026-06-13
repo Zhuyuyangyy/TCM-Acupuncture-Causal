@@ -25,7 +25,7 @@ def generate_synthetic_acupuncture(n=1000, seed=42):
     treatment = rng.binomial(1, prop)
     # True heterogeneous effect: stronger for high baseline VAS
     true_cate = 1.5 + 0.3 * baseline_vas - 0.01 * age
-    outcome = baseline_vas - true_cate * treatment + rng.normal(0, 1, n)
+    outcome = baseline_vas + true_cate * treatment + rng.normal(0, 1, n)
     return {
         "X": np.column_stack([age, sex, pain_duration, baseline_vas]),
         "treatment": treatment, "outcome": outcome,
@@ -37,7 +37,10 @@ def run_causal_forest_experiment():
     data = generate_synthetic_acupuncture(2000)
     cf = CausalForest(n_estimators=100, max_depth=5, n_bootstrap=50)
     cf.fit(data["X"], data["treatment"], data["outcome"])
-    cate_pred, ci_lower, ci_upper = cf.predict_cate(data["X"], return_ci=True)
+    ci_result = cf.predict_ite_ci(data["X"])
+    cate_pred = ci_result["ite"]
+    ci_lower = ci_result["ci_lower"]
+    ci_upper = ci_result["ci_upper"]
     true = data["true_cate"]
     bias = np.mean(cate_pred - true)
     rmse = np.sqrt(np.mean((cate_pred - true) ** 2))

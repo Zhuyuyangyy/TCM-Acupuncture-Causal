@@ -1,7 +1,7 @@
 """Protocol management API router."""
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 from backend.models.target_trial import AcupunctureProtocol, AcupunctureTargetTrial
 
@@ -44,7 +44,7 @@ async def create_protocol(body: ProtocolCreate):
         follow_up_weeks=body.follow_up_weeks,
     )
     _protocols[pid] = proto
-    return ProtocolResponse(id=pid, **body.dict())
+    return ProtocolResponse(id=pid, **body.model_dump())
 
 
 @router.get("/", response_model=List[ProtocolResponse])
